@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Recipe } from '../models/Recipe';
 import { AuthRequest } from '../middleware/authMiddleware';
+import { User } from '../models/User';
 
 // @desc    Get all recipes
 // @route   GET /api/recipes
@@ -57,6 +58,10 @@ export const getRecipeById = async (req: Request, res: Response) => {
 export const createRecipeComment = async (req: AuthRequest, res: Response) => {
   const { text } = req.body;
 
+  if (!text || !text.trim()) {
+    return res.status(400).json({ message: 'Comment text is required' });
+  }
+
   try {
     const recipe = await Recipe.findById(req.params.id);
 
@@ -64,10 +69,15 @@ export const createRecipeComment = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'Recipe not found' });
     }
 
+    const commenter = await User.findById(req.user.id).select('username');
+    if (!commenter) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     const comment = {
       user: req.user.id,
-      username: req.user.username,
-      text,
+      username: commenter.username,
+      text: text.trim(),
       createdAt: new Date(),
     };
 

@@ -37,6 +37,7 @@ export const toggleFavorite = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    user.favorites = user.favorites || [];
     const isFavorited = user.favorites.some((id) => id.toString() === recipeId.toString());
 
     if (isFavorited) {
