@@ -1,0 +1,4 @@
+# git ignore for express ts app 
+node_modules
+.env
+yarn.lock
