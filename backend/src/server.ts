@@ -1,24 +1,30 @@
 import express from 'express';
+import cors from 'cors';
 import { connectDB } from './config/db';
 import { seedDatabase } from './seed/seedData';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Note: cors middleware removed per user request (will not set CORS headers)
-app.use(express.json());
+// CORS - Use the cors package with permissive settings
+app.use(cors({
+  origin: true, // Reflect the request origin
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  credentials: false,
+  preflightContinue: false,
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+}));
 
-// Manual permissive CORS headers (Allow everything for development)
-app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(204);
-    return;
-  }
+// Request logging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
+
+// Body Parser Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Database Connection and Seeding
 connectDB().then(async () => {
@@ -40,6 +46,23 @@ app.use('/api/users', userRoutes);
 // Basic Route
 app.get('/', (req, res) => {
   res.send('Recipe Platform API is running');
+});
+
+// Test CORS route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'CORS is working!', timestamp: new Date().toISOString() });
+});
+
+app.post('/api/test', (req, res) => {
+  res.json({ message: 'POST CORS is working!', body: req.body });
+});
+
+// Error Handler
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Error:', err);
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal server error',
+  });
 });
 
 // Start Server

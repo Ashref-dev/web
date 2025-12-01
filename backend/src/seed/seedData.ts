@@ -4,9 +4,9 @@ import { Recipe } from '../models/Recipe';
 
 const seedUsers = [
   {
-    username: 'chef_mario',
-    email: 'mario@recipes.com',
-    password: 'password123',
+    username: 'mario',
+    email: 'mario@food.com',
+    password: 'Abcd1234',
   },
   {
     username: 'baker_sarah',
@@ -214,11 +214,12 @@ export const seedDatabase = async () => {
       console.log(`✅ Created user: ${user.username}`);
     }
 
-    // Create recipes (distribute among users)
+    // Create recipes (all by Mario)
+    const marioUser = createdUsers[0]; // Mario is the first user
     for (let i = 0; i < seedRecipes.length; i++) {
       const recipe = await Recipe.create({
         ...seedRecipes[i],
-        user: createdUsers[i % createdUsers.length]._id,
+        user: marioUser._id,
       });
       console.log(`✅ Created recipe: ${recipe.title}`);
     }

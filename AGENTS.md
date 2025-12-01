@@ -3,6 +3,7 @@ trigger: always_on
 ---
 
 You must maintain **senior-level standards** in code quality, design aesthetics, and user experience.
+NEVER USE EMOJIS, NOT IN OUTPUT OR CODE, NEVER USE EMOJIS. NO EMOJIS.
 
 ---
 

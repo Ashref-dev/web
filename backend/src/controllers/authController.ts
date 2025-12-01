@@ -10,10 +10,14 @@ const generateToken = (id: string) => {
 };
 
 export const registerUser = async (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
-
   try {
-    const userExists = await User.findOne({ email });
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Username, email, and password are required' });
+    }
+
+    const userExists = await User.findOne({ $or: [{ email }, { username }] });
 
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
@@ -28,38 +32,52 @@ export const registerUser = async (req: Request, res: Response) => {
       password: hashedPassword,
     });
 
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        token: generateToken(user._id.toString()),
-      });
-    } else {
-      res.status(400).json({ message: 'Invalid user data' });
-    }
+    res.status(201).json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      token: generateToken(user._id.toString()),
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Server error during registration' });
   }
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
   try {
-    const user = await User.findOne({ email });
+    const { email, password } = req.body;
+    console.log('Login attempt:', { email, passwordLength: password?.length });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      res.json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        token: generateToken(user._id.toString()),
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
+
+    const user = await User.findOne({ email });
+    console.log('User found:', !!user);
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Password valid:', isPasswordValid);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const token = generateToken(user._id.toString());
+    console.log('Login successful for:', user.email);
+    
+    res.status(200).json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      token,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error during login' });
   }
 };

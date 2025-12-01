@@ -39,7 +39,7 @@ const RecipeDetailPage = () => {
 
   const fetchRecipe = async () => {
     try {
-      const { data } = await api.get(`/api/recipes/${id}`);
+      const { data } = await api.get(`/recipes/${id}`);
       setRecipe(data);
     } catch (error) {
       console.error('Error fetching recipe:', error);
@@ -53,7 +53,7 @@ const RecipeDetailPage = () => {
   const handleDelete = async () => {
     if (confirm('Are you sure you want to delete this recipe?')) {
       try {
-        await api.delete(`/api/recipes/${id}`, {
+        await api.delete(`/recipes/${id}`, {
           headers: { Authorization: `Bearer ${user?.token}` },
         });
         router.push('/');
@@ -67,7 +67,7 @@ const RecipeDetailPage = () => {
     e.preventDefault();
     try {
       await api.post(
-        `/api/recipes/${id}/comments`,
+        `/recipes/${id}/comments`,
         { text: comment },
         {
           headers: { Authorization: `Bearer ${user?.token}` },
@@ -83,7 +83,7 @@ const RecipeDetailPage = () => {
   const handleAddToFavorites = async () => {
     try {
       await api.put(
-        `/api/users/favorites/${id}`,
+        `/users/favorites/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${user?.token}` },
@@ -98,7 +98,41 @@ const RecipeDetailPage = () => {
   if (!recipe)
     return (
       <Layout>
-        <div className='text-center font-bold text-2xl'>Loading...</div>
+        <div className='max-w-4xl mx-auto space-y-8 animate-pulse'>
+          {/* Title Skeleton */}
+          <div className='h-12 bg-gray-200 border-4 border-black w-3/4' />
+          
+          {/* Image Skeleton */}
+          <div className='w-full h-96 bg-gray-200 border-4 border-black flex items-center justify-center'>
+            <span className='text-6xl'>🍳</span>
+          </div>
+
+          {/* Two Column Skeleton */}
+          <div className='grid md:grid-cols-2 gap-8'>
+            <div className='bg-white border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'>
+              <div className='h-8 bg-gray-200 border-2 border-black w-1/2 mb-4' />
+              <div className='space-y-3'>
+                <div className='h-4 bg-gray-100 border-2 border-gray-300 w-full' />
+                <div className='h-4 bg-gray-100 border-2 border-gray-300 w-5/6' />
+                <div className='h-4 bg-gray-100 border-2 border-gray-300 w-4/5' />
+              </div>
+            </div>
+            <div className='bg-white border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'>
+              <div className='h-8 bg-gray-200 border-2 border-black w-1/2 mb-4' />
+              <div className='space-y-3'>
+                <div className='h-4 bg-gray-100 border-2 border-gray-300 w-full' />
+                <div className='h-4 bg-gray-100 border-2 border-gray-300 w-full' />
+                <div className='h-4 bg-gray-100 border-2 border-gray-300 w-3/4' />
+              </div>
+            </div>
+          </div>
+
+          {/* Comments Skeleton */}
+          <div className='bg-white border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'>
+            <div className='h-8 bg-gray-200 border-2 border-black w-1/3 mb-4' />
+            <div className='h-20 bg-gray-100 border-2 border-gray-300 w-full' />
+          </div>
+        </div>
       </Layout>
     );
 

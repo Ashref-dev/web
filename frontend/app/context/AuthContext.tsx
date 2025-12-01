@@ -38,30 +38,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = async (userData: any) => {
     try {
-      const { data } = await api.post('/api/auth/login', userData);
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
+      const response = await api.post('/auth/login', userData);
+      const user = response.data;
+      setUser(user);
+      localStorage.setItem('user', JSON.stringify(user));
       router.push('/');
     } catch (error: any) {
-      console.error(
-        'Login failed:',
-        error.response?.data?.message || error.message
-      );
+      const message = error.response?.data?.message || error.message || 'Login failed';
+      console.error('Login error:', message);
       throw error;
     }
   };
 
   const register = async (userData: any) => {
     try {
-      const { data } = await api.post('/api/auth/register', userData);
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
+      const response = await api.post('/auth/register', userData);
+      const user = response.data;
+      setUser(user);
+      localStorage.setItem('user', JSON.stringify(user));
       router.push('/');
     } catch (error: any) {
-      console.error(
-        'Registration failed:',
-        error.response?.data?.message || error.message
-      );
+      const message = error.response?.data?.message || error.message || 'Registration failed';
+      console.error('Registration error:', message);
       throw error;
     }
   };

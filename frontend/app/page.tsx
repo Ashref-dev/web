@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import Card from './components/ui/Card';
 import Button from './components/ui/Button';
-import Input from './components/ui/Input';
 import api from './services/api';
 import Link from 'next/link';
 import { useAuth } from './context/AuthContext';
@@ -30,7 +29,7 @@ export default function Home() {
   const fetchRecipes = async (pageNumber = 1, searchKeyword = '') => {
     try {
       const { data } = await api.get(
-        `/api/recipes?pageNumber=${pageNumber}&keyword=${searchKeyword}`
+        `/recipes?pageNumber=${pageNumber}&keyword=${searchKeyword}`
       );
       setRecipes(data.recipes);
       setPage(data.page);
@@ -53,10 +52,7 @@ export default function Home() {
   return (
     <Layout>
       {/* Hero Section */}
-      <div className='mb-16 text-center search-hero relative'>
-        <div className='brutalist-accents' aria-hidden>
-          <div className='accent-rectangle pulse-slow' />
-        </div>
+      <div className='mb-16 text-center relative'>
         <div className='inline-block border-4 border-black bg-primary p-2 mb-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]'>
           <h1 className='text-6xl md:text-8xl font-black uppercase tracking-tighter m-0 p-4'>
             Recipe<span className='text-white'>Share</span>
@@ -72,15 +68,15 @@ export default function Home() {
 
         {user ? (
           <Link href='/recipes/create'>
-            <Button className='text-lg px-8 py-4 neo-brutalist-button pulse-slow'>+ Create Your Recipe</Button>
+            <Button className='text-lg px-8 py-4 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-200'>+ Create Your Recipe</Button>
           </Link>
         ) : (
-          <div className='flex gap-4 justify-center flex-wrap search-cta'>
+          <div className='flex gap-4 justify-center flex-wrap'>
             <Link href='/register'>
-              <Button className='text-lg px-8 py-4 neo-brutalist-button'>Join Now</Button>
+              <Button className='text-lg px-8 py-4 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-200'>Join Now</Button>
             </Link>
             <Link href='/login'>
-              <Button variant='outline' className='text-lg px-8 py-4'>
+              <Button variant='outline' className='text-lg px-8 py-4 hover:-translate-y-1 hover:bg-gray-50 transition-all duration-200'>
                 Sign In
               </Button>
             </Link>
@@ -89,40 +85,33 @@ export default function Home() {
       </div>
 
       {/* Search Section (centered, interactive) */}
-      <div className='mb-12 w-full'>
-        <div className='max-w-5xl mx-auto'>
-          <form
-            onSubmit={handleSearch}
-            className='search-input-wrapper mx-auto items-center justify-center'
-          >
-            <div className='search-logo-wrapper neo-brutalist-card wiggle-slow mr-4'>
-              <svg width='28' height='28' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden>
-                <path d='M11 5a6 6 0 100 12 6 6 0 000-12z' stroke='#000' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
-                <path d='M21 21l-4.3-4.3' stroke='#000' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
-              </svg>
-            </div>
-            <div style={{ width: '100%' }}>
-              <div className='flex gap-3 items-center'>
-                <Input
-                  placeholder='Search for recipes — e.g., “Chocolate Cake”'
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  className='text-lg neo-brutalist-input'
-                  aria-label='Search recipes'
-                />
-                <Button
-                  type='submit'
-                  variant='secondary'
-                  className='neo-brutalist-button search-button-anim'
-                >
-                  <span className='mr-2'>🔍</span>
-                  Search
-                </Button>
+      <div className='mb-12 w-full px-4'>
+        <div className='max-w-3xl mx-auto'>
+          <form onSubmit={handleSearch}>
+            <div className='flex items-stretch bg-white border-4 border-black overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'>
+              <div className='flex items-center justify-center px-4 bg-primary border-r-4 border-black flex-shrink-0'>
+                <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+                </svg>
               </div>
-              <div className='mt-2 text-xs text-gray-600 text-center search-sublabel'>
-                Filter by keyword, ingredients, or author — use the search above
-              </div>
+              <input
+                type='text'
+                placeholder='Search recipes... e.g., "Pasta Carbonara"'
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                className='flex-1 px-4 py-4 text-lg font-medium placeholder:text-gray-400 focus:outline-none bg-transparent'
+                aria-label='Search recipes'
+              />
+              <button
+                type='submit'
+                className='px-6 py-4 bg-black text-white font-bold uppercase tracking-wide hover:bg-gray-800 active:bg-gray-900 transition-colors duration-150 flex-shrink-0'
+              >
+                Search
+              </button>
             </div>
+            <p className='text-center text-sm text-gray-600 font-medium mt-2'>
+              Try searching by recipe name, ingredient, or chef
+            </p>
           </form>
         </div>
       </div>

@@ -21,7 +21,7 @@ const EditRecipePage = () => {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const { data } = await api.get(`/api/recipes/${id}`);
+        const { data } = await api.get(`/recipes/${id}`);
         setTitle(data.title);
         setIngredients(data.ingredients.join('\n'));
         setInstructions(data.instructions);
@@ -38,7 +38,7 @@ const EditRecipePage = () => {
     e.preventDefault();
     try {
       await api.put(
-        `/api/recipes/${id}`,
+        `/recipes/${id}`,
         {
           title,
           ingredients: ingredients.split('\n').filter((i) => i.trim()),

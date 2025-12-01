@@ -20,6 +20,7 @@ export const getRecipes = async (req: Request, res: Response) => {
 
     const count = await Recipe.countDocuments({ ...keyword });
     const recipes = await Recipe.find({ ...keyword })
+      .populate('user', 'username email')
       .limit(pageSize)
       .skip(pageSize * (page - 1))
       .sort({ createdAt: -1 });
@@ -59,23 +60,24 @@ export const createRecipeComment = async (req: AuthRequest, res: Response) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
 
-    if (recipe) {
-      const comment = {
-        user: req.user.id,
-        username: req.user.username,
-        text,
-        createdAt: new Date(),
-      };
-
-      recipe.comments.push(comment);
-
-      await recipe.save();
-      res.status(201).json({ message: 'Comment added' });
-    } else {
-      res.status(404).json({ message: 'Recipe not found' });
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found' });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+
+    const comment = {
+      user: req.user.id,
+      username: req.user.username,
+      text,
+      createdAt: new Date(),
+    };
+
+    recipe.comments.push(comment);
+    await recipe.save();
+    
+    res.status(201).json({ message: 'Comment added', comment });
+  } catch (error: any) {
+    console.error('Error creating comment:', error.message);
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
 

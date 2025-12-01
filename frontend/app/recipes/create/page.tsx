@@ -21,7 +21,7 @@ const CreateRecipePage = () => {
     e.preventDefault();
     try {
       await api.post(
-        '/api/recipes',
+        '/recipes',
         {
           title,
           ingredients: ingredients.split('\n').filter((i) => i.trim()),

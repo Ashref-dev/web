@@ -5,10 +5,11 @@ let mongoServer: MongoMemoryServer | null = null;
 
 export const connectDB = async () => {
   try {
-    // Create in-memory MongoDB instance with a compatible version
+    // Create in-memory MongoDB instance
+    // Using 7.0.3+ which is compatible with Debian 12 x86_64
     mongoServer = await MongoMemoryServer.create({
       binary: {
-        version: '7.0.3', // Minimum version supported for Debian 12
+        version: '7.0.3',
       },
     });
     const uri = mongoServer.getUri();

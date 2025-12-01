@@ -21,7 +21,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await api.get('/api/users/profile', {
+        const { data } = await api.get('/users/profile', {
           headers: { Authorization: `Bearer ${user?.token}` },
         });
         setFavorites(data.favorites || []);
